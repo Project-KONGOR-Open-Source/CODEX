@@ -45,7 +45,7 @@ const config: Config = {
   themes: ['@docusaurus/theme-mermaid'],
 
   themeConfig: {
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/caldavar.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
@@ -63,6 +63,18 @@ const config: Config = {
           label: 'Infrastructure',
         },
         {
+          type: 'docSidebar',
+          sidebarId: 'hostServicesSidebar',
+          position: 'left',
+          label: 'Host Services',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'hostMatchServersSidebar',
+          position: 'left',
+          label: 'Host Match Servers',
+        },
+        {
           href: 'https://github.com/Project-KONGOR-Open-Source/CODEX',
           position: 'right',
           className: 'header-github-link',
@@ -71,7 +83,6 @@ const config: Config = {
       ],
     },
     footer: {
-      style: 'dark',
       copyright: `Copyright © ${new Date().getFullYear()} Project KONGOR`,
     },
     prism: {

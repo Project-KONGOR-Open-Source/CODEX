@@ -1,0 +1,22 @@
+# .nojekyll
+
+This file prevents GitHub Pages from processing the site with Jekyll.
+
+## Purpose
+When deploying to GitHub Pages, this file tells GitHub to:
+- Skip Jekyll processing (GitHub's default static site generator).
+- Serve the Docusaurus-built static files directly.
+- Preserve files and folders that start with underscores (_).
+- Prevent Jekyll from ignoring certain file patterns.
+
+## Why is this needed?
+Docusaurus builds its own optimized static site. Without this file, GitHub Pages would:
+- Process the site through Jekyll unnecessarily.
+- Potentially break the site by modifying or ignoring certain files.
+- Add extra build time and potential errors.
+
+## If not deploying to GitHub Pages
+If you're deploying to another platform (Netlify, Vercel, custom server, etc.), this file is not needed and can be safely deleted.
+
+## Technical Note
+The presence of this file (not its content) is what matters to GitHub Pages. This file is copied from static/ to build/ during the Docusaurus build process.

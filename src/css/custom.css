@@ -43,3 +43,33 @@
 [data-theme='dark'] .header-github-link::before {
   background-image: url('/img/github-light.svg');
 }
+
+.footer {
+  padding: 0 !important;
+  background-color: var(--ifm-navbar-background-color) !important;
+  box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] .footer {
+  box-shadow: 0 -1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  padding: 0 1rem;
+}
+
+.footer__copyright {
+  margin: 0;
+}
+
+:root {
+  --ifm-navbar-background-color: #ffffff;
+}
+
+[data-theme='dark'] {
+  --ifm-navbar-background-color: #1b1b1d;
+}
