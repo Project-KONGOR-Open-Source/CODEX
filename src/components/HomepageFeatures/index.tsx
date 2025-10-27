@@ -69,6 +69,36 @@ const FeatureList: FeatureItem[] = [
         cum soluta nobis est eligendi optio cumque.
       </>
     ),
+  },
+    {
+    title: 'Vitae Dicta',
+    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    description: (
+      <>
+        Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur
+        adipisci velit sed quia non numquam eius modi.
+      </>
+    ),
+  },
+  {
+    title: 'Excepturi Sint',
+    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    description: (
+      <>
+        Occaecati cupiditate non provident similique sunt in culpa qui officia
+        deserunt mollitia animi id est laborum et dolorum fuga.
+      </>
+    ),
+  },
+  {
+    title: 'Beatae Vitae',
+    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    description: (
+      <>
+        Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus
+        saepe eveniet ut et voluptates repudiandae sint et molestiae.
+      </>
+    ),
   }
 ];
 

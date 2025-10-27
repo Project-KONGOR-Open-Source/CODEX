@@ -20,3 +20,26 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.header-github-link {
+  display: flex;
+  align-items: center;
+}
+
+.header-github-link::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.header-github-link::before {
+  background-image: url('/img/github-dark.svg');
+}
+
+[data-theme='dark'] .header-github-link::before {
+  background-image: url('/img/github-light.svg');
+}
