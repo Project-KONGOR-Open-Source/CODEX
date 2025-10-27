@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
-
+import styles from './index.module.css';
 
 export default function Home(): ReactNode {
   const { siteConfig } = useDocusaurusContext();
@@ -10,7 +10,7 @@ export default function Home(): ReactNode {
     <Layout
       title={siteConfig.title}
       description="Project KONGOR Knowledge Base">
-      <main>
+      <main className={styles.homepageMain}>
         <HomepageFeatures />
       </main>
     </Layout>

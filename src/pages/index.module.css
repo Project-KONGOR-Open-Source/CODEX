@@ -16,3 +16,22 @@
   align-items: center;
   justify-content: center;
 }
+
+.homepageMain {
+  position: relative;
+}
+
+.homepageMain::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/img/caldavar.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15;
+  z-index: -1;
+}
