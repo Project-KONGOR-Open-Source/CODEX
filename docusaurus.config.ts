@@ -45,7 +45,7 @@ const config: Config = {
   themes: ['@docusaurus/theme-mermaid'],
 
   themeConfig: {
-    image: 'img/caldavar.jpg',
+    image: 'img/background.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
