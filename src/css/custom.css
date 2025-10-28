@@ -1,3 +1,4 @@
+/* Primary Color Theme Variables - Light Mode */
 :root {
   --ifm-color-primary: #2e8555;
   --ifm-color-primary-dark: #29784c;
@@ -8,8 +9,11 @@
   --ifm-color-primary-lightest: #3cad6e;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-navbar-background-color: #ffffff;
 }
 
+
+/* Primary Color Theme Variables - Dark Mode */
 [data-theme='dark'] {
   --ifm-color-primary: #25c2a0;
   --ifm-color-primary-dark: #21af90;
@@ -19,8 +23,11 @@
   --ifm-color-primary-lighter: #32d8b4;
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-navbar-background-color: #1b1b1d;
 }
 
+
+/* GitHub Logo In Navbar */
 .header-github-link {
   display: flex;
   align-items: center;
@@ -36,15 +43,21 @@
   background-position: center;
 }
 
-.header-github-link::before {
+
+/* GitHub Logo - Dark Icon For Light Mode */
+:root .header-github-link::before {
   background-image: url('/img/github-dark.svg');
 }
 
+
+/* GitHub Logo - Light Icon For Dark Mode */
 [data-theme='dark'] .header-github-link::before {
   background-image: url('/img/github-light.svg');
 }
 
-.footer {
+
+/* Footer Styling To Match Navbar */
+:root .footer {
   padding: 0 !important;
   background-color: var(--ifm-navbar-background-color) !important;
   box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.1);
@@ -66,10 +79,43 @@
   margin: 0;
 }
 
-:root {
-  --ifm-navbar-background-color: #ffffff;
+
+/* Center The Three DocSidebar Items In Navbar */
+.navbar__inner {
+  position: relative;
 }
 
-[data-theme='dark'] {
-  --ifm-navbar-background-color: #1b1b1d;
+.theme-layout-navbar-left .navbar__item.navbar__link {
+  position: absolute !important;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0 !important;
+}
+
+
+/* Space Out The Three Centred Navigation Links */
+.theme-layout-navbar-left .navbar__item.navbar__link:nth-child(3) {
+  transform: translate(calc(-50% - 11rem), -50%);
+}
+
+.theme-layout-navbar-left .navbar__item.navbar__link:nth-child(4) {
+  transform: translate(-50%, -50%);
+}
+
+.theme-layout-navbar-left .navbar__item.navbar__link:nth-child(5) {
+  transform: translate(calc(-50% + 11rem), -50%);
+}
+
+
+/* Theme Toggle Button Size To Match GitHub Logo */
+.navbar__item button[class*='colorModeToggle'] {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+}
+
+.navbar__item button[class*='colorModeToggle'] svg {
+  width: 24px;
+  height: 24px;
 }

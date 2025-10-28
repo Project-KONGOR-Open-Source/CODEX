@@ -1,3 +1,4 @@
+/* Hero Banner Section Styling */
 .heroBanner {
   padding: 4rem 0;
   text-align: center;
@@ -5,22 +6,30 @@
   overflow: hidden;
 }
 
+
+/* Hero Banner Responsive Styling For Mobile */
 @media screen and (max-width: 996px) {
   .heroBanner {
     padding: 2rem;
   }
 }
 
+
+/* Button Container Layout */
 .buttons {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+
+/* Home Page Main Container */
 .homepageMain {
   position: relative;
 }
 
+
+/* Background Image With Fade Effect */
 .homepageMain::before {
   content: '';
   position: fixed;
