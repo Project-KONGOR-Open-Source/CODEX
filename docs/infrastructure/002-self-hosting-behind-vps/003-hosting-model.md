@@ -14,7 +14,7 @@ import DarkModeDiagram from './003-hosting-model-diagram-dark.png';
 
 ## Diagram
 
-The following diagram describes the architecture for self-hosting the Project KONGOR services on a local server behind a public VPS.
+The following diagram describes the architecture for self-hosting the Project KONGOR services on a local server behind a public VPS. This hybrid approach leverages the security, reliability, and public accessibility of cloud infrastructure while keeping the actual services running on local hardware, maintaining full control, privacy, and cost efficiency.
 
 <ThemedImage
   alt = "Hosting Model Diagram"
