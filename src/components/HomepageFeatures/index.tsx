@@ -32,7 +32,7 @@ const FeatureList: FeatureItem[] = [
         deserunt mollitia animi id est laborum et dolorum fuga.
       </>
     ),
-    link: '/docs/infrastructure/self-hosting-behind-vps/steps-and-configuration',
+    link: '/docs/utilities/landing-page',
   },
   {
     title: 'Match Server Launcher Guide',
@@ -43,7 +43,7 @@ const FeatureList: FeatureItem[] = [
         laboriosam nisi ut aliquid ex ea commodi.
       </>
     ),
-    link: '/docs/infrastructure/self-hosting-behind-vps/steps-and-configuration',
+    link: '/docs/utilities/landing-page',
   },
 ];
 
@@ -67,9 +67,6 @@ export default function HomepageFeatures(): ReactNode {
   return (
     <section className={styles.features}>
       <div className="container">
-        <div className="text--center margin-bottom--lg">
-          <Heading as="h2">Featured Articles</Heading>
-        </div>
         <div className="row row--align-center">
           {FeatureList.map((props, idx) => (
             <Feature key={idx} {...props} />
