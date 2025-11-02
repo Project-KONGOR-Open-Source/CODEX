@@ -13,7 +13,7 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Host Project KONGOR',
+    title: 'How To Host Project KONGOR',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
@@ -24,7 +24,7 @@ const FeatureList: FeatureItem[] = [
     link: '/docs/infrastructure/self-hosting-behind-vps/steps-and-configuration',
   },
   {
-    title: 'Featured Article #2',
+    title: 'Game Client Launcher Guide',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
@@ -35,7 +35,7 @@ const FeatureList: FeatureItem[] = [
     link: '/docs/infrastructure/self-hosting-behind-vps/steps-and-configuration',
   },
   {
-    title: 'Featured Article #3',
+    title: 'Match Server Launcher Guide',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
