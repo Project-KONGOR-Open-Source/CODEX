@@ -17,6 +17,3 @@ Outputs to the `build` directory.
 ### `npm run serve`
 Serves the built website locally for testing.
 Useful to verify production output before deployment.
-
-### `npm run deploy`
-Publishes the website to **GitHub Pages** (configured via `docusaurus.config.js`).
