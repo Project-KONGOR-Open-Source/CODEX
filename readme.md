@@ -12,7 +12,7 @@ Runs the site at [http://localhost:3000](http://localhost:3000) with live reload
 
 ### `npm run build`
 Bundles the website into static files for production.
-Outputs to the `build/` directory.
+Outputs to the `build` directory.
 
 ### `npm run serve`
 Serves the built website locally for testing.

@@ -35,7 +35,7 @@ jobs:
           node-version: 25
           cache: npm
 
-      - name: Resolve Dependencies
+      - name: Resolve Dependencies (Clean Install)
         run: npm ci
 
       - name: Build Site
