@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npm start)",
+      "Bash(timeout 10 bash:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(dir /b src docs blog)",
+      "Bash(npm start -- --host 0.0.0.0)",
+      "Bash(timeout 15 bash:*)",
+      "Bash(dir:*)",
+      "Bash(npm install:*)",
+      "Bash(taskkill:*)",
+      "Bash(npx kill-port 3000)",
+      "Bash(move \"c:\\Users\\SADS-810\\Source\\CODEX\\docs\\intro.md\" \"c:\\Users\\SADS-810\\Source\\CODEX\\docs\\infrastructure\\intro.md\")",
+      "Bash(move \"c:\\Users\\SADS-810\\Source\\CODEX\\docs\\tutorial-basics\" \"c:\\Users\\SADS-810\\Source\\CODEX\\docs\\infrastructure\\tutorial-basics\")",
+      "Bash(move \"c:\\Users\\SADS-810\\Source\\CODEX\\docs\\tutorial-extras\" \"c:\\Users\\SADS-810\\Source\\CODEX\\docs\\infrastructure\\tutorial-extras\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -64,15 +64,15 @@ const config: Config = {
         },
         {
           type: 'docSidebar',
-          sidebarId: 'hostServicesSidebar',
+          sidebarId: 'servicesSidebar',
           position: 'left',
-          label: 'Host Services',
+          label: 'Services',
         },
         {
           type: 'docSidebar',
-          sidebarId: 'hostMatchServersSidebar',
+          sidebarId: 'utilitiesSidebar',
           position: 'left',
-          label: 'Host Match Servers',
+          label: 'Utilities',
         },
         {
           href: 'https://github.com/Project-KONGOR-Open-Source/CODEX',

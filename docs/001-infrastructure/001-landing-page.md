@@ -11,3 +11,7 @@ slug: ./landing-page
 This section contains documentation on infrastructure-related topics, such as hosting models and hosting platform providers.
 
 This section also documents configuration requirements for self-hosting over LAN or the public internet.
+
+```
+TODO: Add Comprehensive Section Description
+```
