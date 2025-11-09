@@ -53,9 +53,60 @@ There a few bits of Pangolin configuration which are required in order to make t
 
 #### Raw TCP Port Passthrough
 
+To set this up, we will need to make changes to the Pangolin configuration file, mounted at [config/config.yml](https://docs.pangolin.net/self-host/advanced/config-file) in the Docker container, the [docker-compose.yml](https://docs.pangolin.net/self-host/manual/docker-compose#docker-compose-configuration) (Pangolin Docker Compose) file, and the [config/traefik/traefik_config.yml](https://docs.pangolin.net/self-host/manual/docker-compose#traefik-static-configuration) (Traefik Configuration) file.
+
+The next steps assume a Linux machine, which a VPS normally is, a root user, which a VPS normally comes provisioned with, and a default working directory of `root@server` or equivalent. These steps can be followed either over SSH or connected directly to the virtual machine; my recommendation would be SSH-ing from a PowerShell terminal because the keyboard shortcuts are better and it is easier to copy/paste from an external source, such as this knowledge base.
+
+:::tip
+    `nano` is a text editor that runs on the command line. Some of the most useful commands are `CTRL + S` (Save), `CTRL + X` (Exit), `ALT + Delete` (Delete Current Line), `ALT + N` (Enable Line Numbers), and `CTRL + A` followed by `CTRL + K` (Cut Current Line).
+:::
+
+1. Execute `nano config/config.yml` and make sure that the following flag exists and that it is set to true:
+
+```yaml
+flags:
+  allow_raw_resources: true
+```
+
+2. Execute `nano docker-compose.yml` and add the port `11031` to the list of Gerbil ports. `11031` is the default chat server port; if you are overriding it, use the override instead. Simply append the chat server port to the list of already-existing ports, as follows:
+
+```yaml
+  gerbil:
+    ports:
+      - 11031:11031
+```
+
+3. Execute `nano config/traefik/traefik_config.yml` and add the following entry point, or adjust as needed if you're using a non-default chat server port. Make sure to the the `{protocol}-{port}` convention for the entry point name, which is a requirement.
+
+```yaml
+entryPoints:
+  tcp-11031:
+    address: ":11031/tcp"
+```
+
+4. Lastly, restart your Docker stack to apply all changes:
+
+```bash
+sudo docker compose down
+sudo docker compose up --detach
+```
+
+This list of configuration steps documents the setup for our specific use case, however a more generic official version can be found at this location: [https://docs.pangolin.net/manage/resources/tcp-udp-resources](https://docs.pangolin.net/manage/resources/tcp-udp-resources).
+
 #### Site Creation
 
+
+
 #### Resource Creation
+
+#### Update Pangolin
+
+1. Stop the Docker stack with `sudo docker compose down`.
+2. In the `docker-compose.yml` file, update the version number of each service. Check [GitHub](https://github.com/fosrl) for the latest release versions.
+3. Pull the new Docker images with `sudo docker compose pull`.
+4. Stop the Docker stack with `sudo docker compose up --detach`.
+
+More information on the update process is available at this official resource: [https://docs.pangolin.net/self-host/how-to-update](https://docs.pangolin.net/self-host/how-to-update).
 
 ## Local Server
 
@@ -83,4 +134,8 @@ Finally, with all the infrastructure components in place (Cloudflare DNS, VPS wi
 
 :::info
     For an in-depth guide on how to set up the Project KONGOR services on a local machine, please refer to the [Local Environment Setup](/docs/services/self-hosting-locally/set-up-environment) section.
+:::
+
+:::tip[IMPORTANT]
+    Testing
 :::
