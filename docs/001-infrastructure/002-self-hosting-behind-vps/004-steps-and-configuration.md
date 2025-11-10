@@ -18,15 +18,15 @@ Additional information on transferring domains to Cloudflare is available here: 
 
 ### DNS Records
 
-To enable dynamic subdomain routing and raw TCP connections for your self-hosted setup, you'll need to configure specific DNS records in Cloudflare. First, create an A record pointing your root domain to your VPS IP address, which will handle raw TCP traffic directly to the hostname root. Next, add a wildcard A record pointing to the same IP address, allowing the system to automatically create and route subdomains to different local resources behind your VPS without manually configuring each subdomain. These DNS records should have the proxy status (orange cloud) enabled in Cloudflare in order to take advantage of DDoS protection, automatic SSL/TLS encryption, CDN caching, and other security features that Cloudflare provides.
+To enable dynamic sub-domain routing and raw TCP connections for your self-hosted setup, you'll need to configure specific DNS records in Cloudflare. First, create an A record pointing your root domain to your VPS IP address, which will handle raw TCP traffic directly to the hostname root. Next, add a wildcard A record pointing to the same IP address, allowing the system to automatically create and route sub-domains to different local resources behind your VPS without manually configuring each sub-domain. These DNS records should have the proxy status (orange cloud) enabled in Cloudflare in order to take advantage of DDoS protection, automatic SSL/TLS encryption, CDN caching, and other security features that Cloudflare provides.
 
 The configured DNS records should look similar to the following:
 
 <div align="center">
-    | Type | Name | Content        | Proxy Status | TTL  |
-    |:----:|:----:|:--------------:|:------------:|:----:|
-    | A    | @    | VPS IP Address | Proxied      | Auto |
-    | A    | *    | VPS IP Address | Proxied      | Auto |
+    | Type | Name | Content               | Proxy Status | TTL  |
+    |:----:|:----:|:---------------------:|:------------:|:----:|
+    | A    | @    | Public VPS IP Address | Proxied      | Auto |
+    | A    | *    | Public VPS IP Address | Proxied      | Auto |
 </div>
 
 Additional information on setting up DNS records is available here: [https://docs.pangolin.net/self-host/dns-and-networking](https://docs.pangolin.net/self-host/dns-and-networking).
@@ -95,9 +95,42 @@ This list of configuration steps documents the setup for our specific use case, 
 
 #### Site Creation
 
+Before local resources can be connected through Newt, a site must be created in Pangolin's web interface. A site represents a location (such as the local server) that will host resources accessible through the domain. To create a site, log into the Pangolin dashboard and navigate to the Sites section. When creating the site, credentials will be provided (site ID, secret, and endpoint URL) that are required for Newt installation. These credentials should be copied immediately as they are only displayed once during site creation.
 
+For detailed instructions, refer to Pangolin's official documentation: [https://docs.pangolin.net/manage/sites/add-site](https://docs.pangolin.net/manage/sites/add-site).
+
+:::info
+    After creating the site, proceed to the [Newt](#newt) installation section to set up the edge client on the local server before returning here to create resources.
+:::
 
 #### Resource Creation
+
+:::note
+    This step should be completed after installing [Newt](#newt) on the local server.
+:::
+
+Once a site is created and Newt is running on the local server, resources can be added to expose specific local services through sub-domains. A resource in Pangolin represents a mapping between a public sub-domain and a local service (IP address and port). When a resource is created, Pangolin automatically configures the routing, generates SSL/TLS certificates, and creates the necessary sub-domain under the configured domain.
+
+In the case of the Project KONGOR services, two primary resources are required: one for the "master server" API, and another for the raw TCP chat server connection. The API resource handles web-based requests and game client communication over HTTPS, while the chat server resource provides direct TCP connectivity for real-time events. Other services such as the user portal can also be added as resources, if needed.
+
+Resources can be created through the Pangolin web interface by navigating to the Resources section and selecting the appropriate site. Each resource requires the local IP address (typically the Tailscale IP of the local server), the local port number, and the protocol type (HTTP/HTTPS for web services or TCP/UDP for raw connections). Additionally, HTTP/HTTPS resource can be set up on a sub-domain.
+
+The following is an example set of configured resources:
+
+<div align="center">
+    | Name         | Protocol | Target                       | Access                |
+    |:------------:|:--------:|:----------------------------:|:---------------------:|
+    | API Monolith | HTTP     | http://100.100.100.100:55555 | http://api.kongor.net |
+    | Chat Service | TCP      | 100.100.100.100:11031        | 11031                 |
+</div>
+
+:::note
+    In the table above, `100.100.100.100` represents the local server's Tailscale IP address, which is a critical component of the setup. This private Tailscale IP allows the VPS running Pangolin to securely communicate with the local server over the encrypted mesh network. The actual Tailscale IP address for the local server can be found by running `tailscale ip` on the local machine, and should be used in place of the example address shown above.
+:::
+
+:::tip
+    When creating an HTTP resource in Pangolin, the traffic is automatically upgraded to HTTPS with SSL/TLS certificates managed by Pangolin. This means that even though the local service runs on plain HTTP (as shown in the Target column), the public-facing access URL will use HTTPS encryption. This allows local services to remain simple while still providing secure connections to external users.
+:::
 
 #### Update Pangolin
 
@@ -120,12 +153,18 @@ As with the VPS, please follow the installation steps on Tailscale's official kn
 
 Newt is a lightweight edge client that runs on your local server to complete the connection between your local resources and Pangolin on the VPS. It automatically discovers the optimal Pangolin node for best performance and maintains dual connections: a WebSocket connection to Pangolin for control plane communication and a WireGuard connection via Gerbil (tunnel manager) for the data plane. Newt creates TCP/UDP proxies to securely expose your local applications and services, making them accessible through the sub-domains managed by Pangolin.
 
-Before installing Newt, you must first create a site in Pangolin and copy the Newt credentials (ID, secret, and endpoint). For instructions on how to create a site, please refer to Pangolin's official documentation: [https://docs.pangolin.net/manage/sites/add-site](https://docs.pangolin.net/manage/sites/add-site).
+:::note
+    Before installing Newt, a site must first be created in Pangolin (see the [Site Creation](#site-creation) section) to obtain the required credentials.
+:::
 
-Once the site is created in Pangolin, Newt can be installed via either binary installation or Docker deployment, with the latter being the recommended approach. You don't need to do anything fancy with Docker Compose, just pull the image and run a container as per the following instructions from Pangolin's official documentation: [https://docs.pangolin.net/manage/sites/install-site](https://docs.pangolin.net/manage/sites/install-site#docker-installation).
+Newt can be installed via either binary installation or Docker deployment, with the latter being the recommended approach. Installation instructions are available in Pangolin's official documentation: [https://docs.pangolin.net/manage/sites/install-site](https://docs.pangolin.net/manage/sites/install-site#docker-installation).
 
 :::tip
-    The Newt credentials are available in Pangolin only at the time of creating a new site. If there is ever a need to retrieve them afterwards, such as for spinning up a new Newt container in Docker, the already-existing container can be inspected for these secrets.
+    The Newt credentials are only displayed during site creation. If needed later (such as for spinning up a new container), they can be retrieved by inspecting the existing Newt container.
+:::
+
+:::info
+    After Newt is running, return to the VPS configuration to complete the [Resource Creation](#resource-creation) section and expose the local services.
 :::
 
 ### Project KONGOR Services
