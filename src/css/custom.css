@@ -27,6 +27,16 @@
 }
 
 
+/* Home Page Card Accent, Using The Greens From The DAWNBRINGER Palette */
+:root {
+  --kongor-accent: #2e7d32;
+}
+
+[data-theme='dark'] {
+  --kongor-accent: #00e676;
+}
+
+
 /* GitHub Logo In Navbar */
 .header-github-link {
   display: flex;
