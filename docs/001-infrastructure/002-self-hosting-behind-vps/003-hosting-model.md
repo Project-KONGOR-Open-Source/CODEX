@@ -14,7 +14,7 @@ import DarkModeDiagram from './003-hosting-model-diagram-dark.png';
 
 ## Diagram
 
-The following diagram describes the architecture for self-hosting the Project KONGOR services on a local server behind a public VPS. This hybrid approach leverages the security, reliability, and public accessibility of cloud infrastructure while keeping the actual services running on local hardware, maintaining full control, privacy, and cost efficiency.
+The following diagram shows how the Project KONGOR services are hosted. Everything runs on a private home lab, and a public VPS sits in front of it as the only machine which can be reached from the internet.
 
 <ThemedImage
   alt = "Hosting Model Diagram"
@@ -25,33 +25,58 @@ Use `right-click` followed by `Save Link As ...` to download the diagram [source
 
 ## How It Works
 
-The hosting model uses a multi-layered approach to securely expose self-hosted services to the public internet:
+### Clients
 
-### Application Traffic Flow
+Players connect with [WILLOWMAKER](/docs/utilities/willowmaker), the Project KONGOR client launcher. WILLOWMAKER keeps the game client distribution up to date from the CDN, then launches the game client pointed at the master server.
 
-1. **Cloudflare Layer**: User requests first hit Cloudflare with proxy enabled, which handles SSL termination, DDoS protection, and CDN caching. Cloudflare also hides the VPS's real IP address, adding an extra security layer.
+### Cloudflare
 
-2. **VPS Gateway**: Cloudflare forwards the request to the VPS, which acts as a reverse-proxy. The VPS provides a stable public endpoint with professional hosting infrastructure.
+Cloudflare provides DNS for the domain. The records for the API, the user portal, and the chat server point straight at the VPS (DNS-only, not proxied), because the chat server and the match servers need raw TCP and UDP ports, which Cloudflare's proxy does not forward.
 
-3. **Tailscale VPN**: The VPS connects to the physical server through a Tailscale VPN tunnel. This creates a secure, encrypted connection between the VPS and your local infrastructure without requiring port forwarding or exposing your home IP address.
+Cloudflare also hosts the [CDN](/docs/services/content-delivery), which the launchers use to keep the game client and match server distributions up to date. The master server can act as the CDN too, which is handy for local development or as a fallback.
 
-4. **Physical Server**: The actual services run on your local infrastructure, which handles the heavy lifting while maintaining complete control, privacy, and lower operational costs.
+### Virtual Private Server
 
-### Resource Traffic Tunnelling
+The VPS runs [Pangolin](https://pangolin.net) as a Docker Compose stack of three containers:
 
-In addition to the main reverse-proxy flow, the architecture also includes specialized components for handling resource traffic through the Pangolin tunnelling system:
+- **Pangolin**: the dashboard and API, which hold the configuration for sites and resources, and push it to the other components
+- **Gerbil**: owns all of the public ports, and manages the WireGuard end of the tunnel
+- **Traefik**: shares Gerbil's network, and routes HTTP/HTTPS traffic by host name (with Let's Encrypt certificates) and raw TCP/UDP traffic by port
 
-- **Newt**: A WireGuard tunnel client and TCP/UDP proxy running on the physical server. Newt manages resource traffic (such as game assets, static files, or media content) and tunnels it through an encrypted WireGuard connection to the VPS.
+Nothing else runs on the VPS, and it stores no player data.
 
-- **Gerbil**: A WireGuard interface management server running on the VPS. Gerbil receives the tunnelled resource traffic from Newt and serves it to clients through the VPS's public endpoint.
+### Tunnel
 
-- **Pangolin**: The central control plane that manages the configuration and coordination between Newt and Gerbil, providing identity-aware access control and routing.
+Newt runs on the home lab and dials out to the VPS, setting up an encrypted WireGuard tunnel to Gerbil. Every request which reaches the VPS for a home lab service travels down this tunnel. The home router never accepts an inbound connection, so no ports need to be forwarded and the home network's IP address is never exposed.
 
-This dual-path approach separates API/application traffic (routed through Tailscale) from resource traffic (routed through Pangolin/Newt/Gerbil), optimizing performance and bandwidth usage across the infrastructure.
+### Home Lab
 
-This architecture combines the reliability and security of cloud services (Cloudflare + VPS) with the benefits of self-hosting, all connected through secure VPN tunnels.
+Newt hands the traffic coming out of the tunnel to its target on the local network:
+
+- **Project KONGOR Services**: [NEXUS](/docs/services/landing-page), which includes the master server, the chat server, the user portal, and everything they depend on
+- **Match Server Manager / Match Server Reverse-Proxy**: [COMPEL](/docs/utilities/compel), which keeps the match server distribution up to date, runs the match servers, and receives the game and voice traffic on the public ports through its built-in UDP proxy, before forwarding it to the match servers themselves
+
+## Public Endpoints
+
+The following table summarises what is exposed to the internet, and where each request ends up.
+
+<div align="center">
+    | Public Endpoint         | Protocol | Home Lab Target   | Purpose                            |
+    |:-----------------------:|:--------:|:-----------------:|:----------------------------------:|
+    | `api.kongor.net`        | HTTP     | Master Server     | game client and match server API   |
+    | `portal.kongor.net`     | HTTPS    | Web Portal UI     | account management                 |
+    | `chat.kongor.net:11031` | TCP      | Chat Server       | game client connections            |
+    | `chat.kongor.net:11032` | TCP      | Chat Server       | match server connections           |
+    | `chat.kongor.net:11033` | TCP      | Chat Server       | match server manager connections   |
+    | `kongor.net:21234`      | UDP      | COMPEL            | server list pings                  |
+    | `kongor.net:21235+`     | UDP      | COMPEL            | match server game traffic          |
+    | `kongor.net:21435+`     | UDP      | COMPEL            | match server voice traffic         |
+    | `cdn.kongor.net`        | HTTPS    | none (Cloudflare) | distribution synchronisation       |
+</div>
+
+The game and voice ports go up by one for each match server, so five match servers use ports `21235-21239` and `21435-21439`.
 
 ## Additional Notes
 
-- Cloudflare is not mandatory, but it is highly recommended, as it provides SSL termination, DDoS protection, CDN caching, and IP obfuscation for free.
-- Renting a VPS may sound costly, but in fact it is not. The machine itself only acts as a public gateway, and does not need to be powerful on hardware resources. Numerous hosting providers offer VPS solutions with sufficient resources for this type of setup for a very modest amount of currency units.
+- Cloudflare is not mandatory for this setup. Any DNS provider works, and the CDN content can be served by the master server instead.
+- Renting a VPS may sound costly, but it is not. The VPS only acts as a gateway and does not need much power, so a very modest one is enough.

@@ -11,22 +11,59 @@
 .featureSvg {
   height: 200px;
   width: 200px;
+  transition: transform 0.3s ease;
 }
 
 .featureLink {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: block;
   text-decoration: none !important;
   color: var(--ifm-font-color-base) !important;
   padding: 1rem;
-  border-radius: 8px;
-  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-.featureLink:hover {
+
+/* Soft Accent Glow Behind The Card, Revealed On Hover */
+.featureLink::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    circle at 50% 0%,
+    color-mix(in srgb, var(--ifm-color-primary) 18%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.featureLink:hover,
+.featureLink:focus-visible {
   text-decoration: none !important;
   color: var(--ifm-font-color-base) !important;
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  outline: none;
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--ifm-color-primary) 50%, transparent);
+  box-shadow: 0 12px 32px -12px color-mix(in srgb, var(--ifm-color-primary) 60%, transparent);
+}
+
+.featureLink:hover::before,
+.featureLink:focus-visible::before {
+  opacity: 1;
+}
+
+.featureLink:hover .featureSvg,
+.featureLink:focus-visible .featureSvg {
+  transform: scale(1.05);
 }
 
 .featureLink:visited,
@@ -41,6 +78,29 @@
   color: var(--ifm-font-color-base) !important;
 }
 
-[data-theme='dark'] .featureLink:hover {
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+.featureLink h3 {
+  transition: color 0.25s ease;
+}
+
+.featureLink:hover h3,
+.featureLink:focus-visible h3 {
+  color: var(--ifm-color-primary) !important;
+}
+
+
+/* Keep The Accent Colours, But Drop The Movement, For Users Who Prefer Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .featureLink,
+  .featureLink::before,
+  .featureLink h3,
+  .featureSvg {
+    transition: none;
+  }
+
+  .featureLink:hover,
+  .featureLink:focus-visible,
+  .featureLink:hover .featureSvg,
+  .featureLink:focus-visible .featureSvg {
+    transform: none;
+  }
 }
