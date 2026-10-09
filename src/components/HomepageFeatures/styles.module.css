@@ -39,7 +39,7 @@
   z-index: -1;
   background: radial-gradient(
     circle at 50% 0%,
-    color-mix(in srgb, var(--kongor-accent) 18%, transparent),
+    color-mix(in srgb, var(--ifm-color-primary) 18%, transparent),
     transparent 70%
   );
   opacity: 0;
@@ -52,8 +52,8 @@
   color: var(--ifm-font-color-base) !important;
   outline: none;
   transform: translateY(-6px);
-  border-color: color-mix(in srgb, var(--kongor-accent) 50%, transparent);
-  box-shadow: 0 12px 32px -12px color-mix(in srgb, var(--kongor-accent) 60%, transparent);
+  border-color: color-mix(in srgb, var(--ifm-color-primary) 50%, transparent);
+  box-shadow: 0 12px 32px -12px color-mix(in srgb, var(--ifm-color-primary) 60%, transparent);
 }
 
 .featureLink:hover::before,
@@ -84,7 +84,7 @@
 
 .featureLink:hover h3,
 .featureLink:focus-visible h3 {
-  color: var(--kongor-accent) !important;
+  color: var(--ifm-color-primary) !important;
 }
 
 
