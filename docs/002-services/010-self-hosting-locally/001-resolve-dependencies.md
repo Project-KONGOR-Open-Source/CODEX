@@ -45,4 +45,4 @@ dotnet tool restore
 
 ## Source Code
 
-Clone [NEXUS](https://github.com/Project-KONGOR-Open-Source/NEXUS). To have the master server serve the [Content Delivery](/docs/services/content-delivery) files locally, also clone GEMINI into the same parent directory, so that the two sit next to each other.
+Clone [NEXUS](https://github.com/Project-KONGOR-Open-Source/NEXUS). To have the master server act as the [CDN](/docs/services/content-delivery) locally, also place a copy of GEMINI in the same parent directory, so that the two sit next to each other.

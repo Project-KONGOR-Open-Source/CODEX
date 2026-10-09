@@ -22,7 +22,7 @@ NEXUS is made up of the following services:
     | [Database](/docs/services/database)                   | persistent storage for accounts, matches, and statistics   |
     | [Distributed Cache](/docs/services/distributed-cache) | short-lived state shared between services                  |
     | [Log Server](/docs/services/log-server)               | structured logs from every service, in one place           |
-    | [Content Delivery](/docs/services/content-delivery)   | the game client and match server files                     |
+    | [Content Delivery](/docs/services/content-delivery)   | the CDN which the launchers synchronise from               |
 </div>
 
 The [Self-Hosting Locally](/docs/services/self-hosting-locally/resolve-dependencies) pages cover running all of NEXUS on a single machine, and the [Hosting Model](/docs/infrastructure/self-hosting-behind-vps/hosting-model) shows where NEXUS fits in the bigger picture.

@@ -52,7 +52,7 @@ A resource is Pangolin's name for a single exposed service. An HTTP resource map
 
 ### CDN (Content Delivery Network)
 
-A Content Delivery Network is a network of servers spread across the world, which caches content and serves it to users from the location closest to them. This reduces latency, speeds up downloads, and takes load off the origin server. The Project KONGOR game client and match server files are served this way, from Cloudflare.
+A Content Delivery Network is a network of servers spread across the world, which caches content and serves it to users from the location closest to them. This reduces latency, speeds up delivery, and takes load off the origin server. The launchers keep the game client and match server distributions up to date through Cloudflare's CDN.
 
 ### DDoS (Distributed Denial Of Service)
 

@@ -26,8 +26,8 @@ This approach is also cheap. A VPS which only forwards traffic does not need muc
 
 ### Where Cloudflare Fits In
 
-Cloudflare manages the domain's DNS records and hosts the CDN which serves the game client and match server files.
+Cloudflare manages the domain's DNS records and hosts the CDN, which the launchers use to keep the game client and match server distributions up to date.
 
 The DNS records for the hosts handled by the VPS are set to DNS-only rather than proxied. The chat server and the match servers need raw TCP and UDP ports, which Cloudflare's proxy does not forward on its standard plans, and the VPS already takes care of TLS certificates for the HTTP hosts. Proxying can still be turned on for hosts which only serve HTTP traffic, such as the user portal, in order to get Cloudflare's DDoS protection, firewall, and caching in front of them, but this is optional.
 
-The CDN is a different story. Game files are large and rarely change, so they are served from Cloudflare's object storage behind Cloudflare's own proxy. This keeps the heaviest traffic off both the VPS and the home connection.
+The CDN is a different story. It carries the heaviest traffic, so it lives in Cloudflare's object storage behind Cloudflare's own proxy, which keeps that traffic off both the VPS and the home connection.

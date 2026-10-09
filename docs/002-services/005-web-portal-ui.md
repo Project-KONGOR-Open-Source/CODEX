@@ -16,7 +16,7 @@ The web portal UI (`DAWNBRINGER.WebPortal.UI`) is the user portal website, avail
 - email address registration
 - forgotten password resets
 - account tools
-- downloads for the launcher, the game client distribution, and the match server distribution
+- a downloads page for the launchers
 
 ## How It Connects
 

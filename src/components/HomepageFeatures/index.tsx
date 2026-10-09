@@ -39,8 +39,8 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Host match servers with COMPEL, which keeps the match server files up to
-        date, and runs and supervises your match servers.
+        Host match servers with COMPEL, which keeps the match server distribution
+        up to date, and runs and supervises your match servers.
       </>
     ),
     link: '/docs/utilities/compel',
