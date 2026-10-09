@@ -23,6 +23,8 @@ NEXUS needs a few secrets before it can start. Each one can be set either as a u
     | `smtp-password`              | `SMTP_PASSWORD`              | outside of development  |
 </div>
 
+The SMTP parameters come from the email service, which is described in the [Email Service](/docs/infrastructure/email-service) section.
+
 User secrets are set against the application host project:
 
 ```powershell

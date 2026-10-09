@@ -28,4 +28,4 @@ The web portal API (`ZORGATH.WebPortal.API`) is the back end of the user portal.
 
 In development, emails are caught by Mailpit, a local SMTP server which the application host starts automatically. Mailpit has a web interface at `http://localhost:8025`, where every email which NEXUS sends can be read, and nothing ever reaches a real inbox.
 
-In every other environment, emails go out through a real SMTP relay, such as Amazon SES. The relay is configured with the SMTP parameters described in the [Set Up Environment](/docs/services/self-hosting-locally/set-up-environment) section.
+In every other environment, emails go out through a real email service, such as Amazon SES, using SMTP with STARTTLS. Setting one up is covered in the [Email Service](/docs/infrastructure/email-service) section, and the SMTP parameters which NEXUS reads are described in the [Set Up Environment](/docs/services/self-hosting-locally/set-up-environment) section.

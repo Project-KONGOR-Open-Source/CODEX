@@ -30,7 +30,7 @@ Once NEXUS is running, the Aspire dashboard is available at `https://localhost:5
 
 ## Production
 
-The `ASPIRE.ApplicationHost Production` launch profile runs NEXUS for real. Compared to development, it uses the production database, the public host names, a real SMTP relay instead of Mailpit, and a login for the log server.
+The `ASPIRE.ApplicationHost Production` launch profile runs NEXUS for real. Compared to development, it uses the production database, the public host names, a real [email service](/docs/infrastructure/email-service) instead of Mailpit, and a login for the log server.
 
 ```powershell
 # In The Context Of The Solution Directory

@@ -30,7 +30,8 @@ The setup follows this order:
 3. **Site Creation**: create a site in Pangolin, which provides the credentials for Newt
 4. **Newt**: run Newt on the home lab, which connects it to the VPS
 5. **Resource Creation**: create resources in Pangolin, which expose the home lab services
-6. **Project KONGOR Services**: run NEXUS and COMPEL on the home lab
+6. **Email Service**: set up an email provider, which NEXUS needs in production
+7. **Project KONGOR Services**: run NEXUS and COMPEL on the home lab
 
 :::tip
     Each section ends with a verification step. It is worth checking that each part works before moving on to the next one.
@@ -46,25 +47,33 @@ Additional information on transferring domains to Cloudflare is available here: 
 
 ### DNS Records
 
-Two DNS records are needed, both pointing at the VPS's public IP address. The IP address can be found in the VPS provider's dashboard, or by running `curl -4 ifconfig.me` on the VPS.
+Two DNS records point at the VPS's public IP address. The IP address can be found in the VPS provider's dashboard, or by running `curl -4 ifconfig.me` on the VPS.
 
 The first is an A record for the root domain, which carries the raw TCP and UDP traffic for the chat server and the match servers. The second is a wildcard A record, which lets Pangolin serve any sub-domain (for example `api.kongor.net` or `portal.kongor.net`) without each one needing its own record.
 
 Both records must be set to **DNS only** (grey cloud). Cloudflare's proxy only forwards HTTP/HTTPS traffic on its standard plans, so a proxied record would break the raw TCP and UDP ports, and it would also get in the way of the Let's Encrypt certificates which Pangolin requests for the HTTP sub-domains.
 
-The configured DNS records should look similar to the following:
+The rest of the records cover the services which don't go through the VPS: the CDN, this documentation site, and the email service. More specific records always take precedence over the wildcard, so these sub-domains are not affected by it.
+
+The full set of DNS records looks like the following:
 
 <div align="center">
-    | Type | Name | Content               | Proxy Status | TTL  |
-    |:----:|:----:|:---------------------:|:------------:|:----:|
-    | A    | @    | Public VPS IP Address | DNS Only     | Auto |
-    | A    | *    | Public VPS IP Address | DNS Only     | Auto |
+    | Type  | Name                  | Content                                     | Proxy Status | Purpose                         |
+    |:-----:|:---------------------:|:-------------------------------------------:|:------------:|:-------------------------------:|
+    | A     | `@`                   | Public VPS IP Address                       | DNS Only     | chat server and match servers   |
+    | A     | `*`                   | Public VPS IP Address                       | DNS Only     | HTTP sub-domains, via Pangolin  |
+    | CNAME | `cdn`                 | `public.r2.dev`                             | Proxied      | CDN, on Cloudflare R2           |
+    | CNAME | `codex`               | `project-kongor-open-source.github.io`      | Proxied      | this documentation site         |
+    | CNAME | `{token}._domainkey`  | `{token}.dkim.amazonses.com`                | DNS Only     | email DKIM (three records)      |
+    | MX    | `project`             | `10 feedback-smtp.eu-west-2.amazonses.com`  | DNS Only     | email custom MAIL FROM domain   |
+    | TXT   | `project`             | `"v=spf1 include:amazonses.com ~all"`       | DNS Only     | email SPF                       |
+    | TXT   | `_dmarc`              | `"v=DMARC1; p=none;"`                       | DNS Only     | email DMARC                     |
 </div>
 
 Additional information on setting up DNS records is available here: [https://docs.pangolin.net/self-host/dns-and-networking](https://docs.pangolin.net/self-host/dns-and-networking).
 
 :::note
-    The `cdn` sub-domain is the exception. It is connected to a Cloudflare R2 bucket as a custom domain, which creates its own proxied record and takes precedence over the wildcard. See [Content Delivery](/docs/services/content-delivery) for more details.
+    The `cdn` record is created automatically when an R2 bucket is connected to a custom domain in the Cloudflare dashboard, and the `codex` record is the one GitHub Pages asks for when using a custom domain. The email records come from the email provider, and are described in the [Email Service](/docs/infrastructure/email-service) section.
 :::
 
 :::tip[VERIFICATION]
@@ -109,7 +118,7 @@ For reference, this is the `docker-compose.yml` which we use, with five match se
 name: pangolin
 services:
   pangolin:
-    image: docker.io/fosrl/pangolin:1.17.1
+    image: docker.io/fosrl/pangolin:1.24.0
     container_name: pangolin
     restart: unless-stopped
     volumes:
@@ -121,7 +130,7 @@ services:
       retries: 15
 
   gerbil:
-    image: docker.io/fosrl/gerbil:1.3.1
+    image: docker.io/fosrl/gerbil:1.5.2
     container_name: gerbil
     restart: unless-stopped
     depends_on:
@@ -158,7 +167,7 @@ services:
       - 21435-21439:21435-21439/udp
 
   traefik:
-    image: docker.io/traefik:v3.6.13
+    image: docker.io/traefik:v3.7.14
     container_name: traefik
     restart: unless-stopped
     network_mode: service:gerbil # Ports Appear On The Gerbil Service
@@ -196,9 +205,12 @@ server:
     secret: "..." # Generated By The Installer, Keep This Private
 
 flags:
+    enable_integration_api: true
     disable_signup_without_invite: true
     allow_raw_resources: true
 ```
+
+The `enable_integration_api` flag turns on Pangolin's [Integration API](https://docs.pangolin.net/manage/integration-api), which allows sites and resources to be managed from scripts, using an organisation API key created in the dashboard. It listens on port `3003` inside the Docker network only. Making it reachable from the outside needs its own Traefik route and sub-domain, as described in the [official documentation](https://docs.pangolin.net/self-host/advanced/integration-api).
 
 `dynamic_config.yml` is generated by the installer and mostly does not need touching. The one addition we made is a redirect from the bare root domain to the user portal, so that visiting `kongor.net` in a browser lands somewhere useful:
 
@@ -407,9 +419,13 @@ Installation instructions are available in Pangolin's official documentation: [h
     Once Newt is running, go back to the [Resource Creation](#resource-creation) section to expose the home lab services.
 :::
 
-### Project KONGOR Services
+## Email Service
 
-With the VPS and Newt in place, the last step is to run the services themselves on the home lab: [NEXUS](/docs/services/landing-page) for the master server, chat server, and user portal, and [COMPEL](/docs/utilities/compel) for the match servers. Once they are running, they are reachable through the sub-domains and ports set up in Pangolin, and players can connect by pointing [WILLOWMAKER](/docs/utilities/willowmaker) at the public host name.
+NEXUS needs an email service in production, for verifying email addresses and resetting forgotten passwords. It is the only external service which NEXUS depends on, and setting it up is covered in the [Email Service](/docs/infrastructure/email-service) section.
+
+## Project KONGOR Services
+
+With the VPS, Newt, and the email service in place, the last step is to run the services themselves on the home lab: [NEXUS](/docs/services/landing-page) for the master server, chat server, and user portal, and [COMPEL](/docs/utilities/compel) for the match servers. Once they are running, they are reachable through the sub-domains and ports set up in Pangolin, and players can connect by pointing [WILLOWMAKER](/docs/utilities/willowmaker) at the public host name.
 
 For COMPEL, make sure that `UseProxy` is set to `true` and that `Gateway` is set to the public domain (`kongor.net` in our case), so that the match servers advertise the public address and the proxy ports which Pangolin forwards.
 
@@ -445,12 +461,30 @@ For COMPEL, make sure that `UseProxy` is set to `true` and that `Gateway` is set
 
 ### Updating Pangolin
 
-Pangolin, Gerbil, and Traefik should be updated from time to time, to pick up bug fixes, security patches, and new features. The update process is as follows:
+Pangolin, Gerbil, Traefik, and the Badger plugin should be updated from time to time, to pick up bug fixes, security patches, and new features. The official update process is the following:
 
-1. Stop the Docker stack with `sudo docker compose down`.
-2. In `docker-compose.yml`, update the image version of each container. Check [GitHub](https://github.com/fosrl) for the latest Pangolin and Gerbil releases, and read the release notes, since some releases need extra migration steps.
-3. Pull the new Docker images with `sudo docker compose pull`.
-4. Start the Docker stack with `sudo docker compose up --detach`.
+1. Back up the `config` directory and `docker-compose.yml`.
+2. Stop the Docker stack with `sudo docker compose down`.
+3. Find the latest stable releases of [Pangolin](https://github.com/fosrl/pangolin/releases), [Gerbil](https://github.com/fosrl/gerbil/releases), [Badger](https://github.com/fosrl/badger/releases), and [Traefik](https://github.com/traefik/traefik/releases), and read the release notes.
+4. In `docker-compose.yml`, update the image version of each container.
+5. In `config/traefik/traefik_config.yml`, update the Badger plugin version:
+
+```yaml
+experimental:
+  plugins:
+    badger:
+      moduleName: "github.com/fosrl/badger"
+      version: "v1.7.0"
+```
+
+6. Pull the new Docker images with `sudo docker compose pull`.
+7. Start the Docker stack with `sudo docker compose up --detach`, and follow the logs with `sudo docker compose logs --follow` until Pangolin reports that all migrations completed successfully.
+
+When Pangolin is more than one release behind, it should be updated one minor release at a time, repeating the steps above for each one, rather than jumping straight to the latest release. The release notes also say when a release needs a newer Gerbil or Badger, which Pangolin's migrations do not always take care of.
+
+:::note
+    When a release updates the Badger version itself, Pangolin rewrites `traefik_config.yml`, which drops its comments and quotes. The configuration stays the same, so this is harmless.
+:::
 
 :::tip[VERIFICATION]
     After updating, check that all containers are running with `sudo docker ps`, and that the site and its resources still show as online in the Pangolin dashboard.
@@ -459,7 +493,7 @@ Pangolin, Gerbil, and Traefik should be updated from time to time, to pick up bu
 More information on the update process is available at this official resource: [https://docs.pangolin.net/self-host/how-to-update](https://docs.pangolin.net/self-host/how-to-update).
 
 :::warning
-    Always back up the `config` directory before updating. It holds Pangolin's database and configuration, so it can be restored if anything goes wrong.
+    Always back up the `config` directory before updating. It holds Pangolin's database and configuration, and Pangolin cannot be downgraded once its database has been migrated, so the backup is the only way back if anything goes wrong.
 :::
 
 :::info

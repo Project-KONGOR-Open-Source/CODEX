@@ -19,3 +19,5 @@ The [Self-Hosting Behind VPS](/docs/infrastructure/self-hosting-behind-vps/motiv
 - [Hosting Model](/docs/infrastructure/self-hosting-behind-vps/hosting-model): how traffic gets from a player to the home lab
 - [Steps And Configuration](/docs/infrastructure/self-hosting-behind-vps/steps-and-configuration): how to set it all up, with the configuration in use today
 - [Troubleshooting](/docs/infrastructure/self-hosting-behind-vps/troubleshooting): common problems and how to fix them
+
+The [Email Service](/docs/infrastructure/email-service) page covers the one external service which the Project KONGOR services depend on, and which needs to be set up for production.
