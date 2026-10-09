@@ -343,7 +343,7 @@ A more generic version of these steps can be found in Pangolin's official docume
 A site represents a location which hosts services, which in our case is the home lab. Sites are created in the Pangolin dashboard, under the Sites section. When a site is created, Pangolin shows the credentials which Newt needs in order to connect: a site ID, a secret, and the endpoint URL.
 
 :::danger
-    **CRITICAL**: The site credentials are only displayed once, when the site is created. Copy them somewhere safe before closing the window. If they are lost, they can only be recovered by inspecting a running Newt container.
+    **CRITICAL**: The site credentials are only displayed once, when the site is created. Copy them somewhere safe before closing the window. If they are lost, they can be read from a running Newt container with `docker inspect newt`, or replaced with new ones from the site's settings (see the [Updating Newt](#updating-newt) section).
 :::
 
 For detailed instructions, refer to Pangolin's official documentation: [https://docs.pangolin.net/manage/sites/add-site](https://docs.pangolin.net/manage/sites/add-site).
@@ -405,8 +405,8 @@ services:
     restart: unless-stopped
     environment:
       - PANGOLIN_ENDPOINT=https://pangolin.kongor.net
-      - NEWT_ID=<site ID>
-      - NEWT_SECRET=<site secret>
+      - NEWT_ID={site-id}
+      - NEWT_SECRET={site-secret}
 ```
 
 Installation instructions are available in Pangolin's official documentation: [https://docs.pangolin.net/manage/sites/install-site](https://docs.pangolin.net/manage/sites/install-site#docker-installation).
@@ -494,6 +494,32 @@ More information on the update process is available at this official resource: [
 
 :::warning
     Always back up the `config` directory before updating. It holds Pangolin's database and configuration, and Pangolin cannot be downgraded once its database has been migrated, so the backup is the only way back if anything goes wrong.
+:::
+
+### Updating Newt
+
+Newt should be kept up to date too, especially after updating Pangolin, since newer Pangolin releases can expect a newer Newt. The Pangolin dashboard shows which version of Newt each site runs, and flags when an update is available. The simplest way to update Newt is to remove it and install it again from scratch, with the same site credentials:
+
+1. Make sure that a copy of the site ID and secret is at hand. If not, read them from the running container with `docker inspect newt`, before removing it.
+2. Check the [Newt releases](https://github.com/fosrl/newt/releases) and read the release notes.
+3. Stop and remove Newt with `docker compose down`.
+4. Pull the latest Newt image with `docker compose pull`.
+5. Start Newt again with `docker compose up --detach`.
+
+If Newt was installed with `docker run` instead of Docker Compose, the equivalent is to remove the container with `docker rm --force newt`, pull the latest image with `docker pull fosrl/newt`, and then install it again with the same credentials:
+
+```bash
+docker run -dit --name newt --restart=unless-stopped fosrl/newt --id {site-id} --secret {site-secret} --endpoint https://pangolin.kongor.net
+```
+
+The site and its resources live in Pangolin, so they stay untouched while Newt is reinstalled. The home lab services are unreachable from the internet for the few seconds that Newt is down, though, so it is best to update it when nobody is playing.
+
+:::tip[VERIFICATION]
+    Check that the container is running with `docker ps`, and that the site shows as online in the Pangolin dashboard, with the new version of Newt.
+:::
+
+:::tip
+    If the site credentials are lost, new ones can be generated in the Pangolin dashboard, in the site's settings, with the Regenerate Credentials option. The plain Regenerate option keeps the running Newt connected until it is restarted, so Newt can then be reinstalled with the new credentials as above, with no extra downtime. As with site creation, the new credentials are only displayed once, so save them straight away.
 :::
 
 :::info
