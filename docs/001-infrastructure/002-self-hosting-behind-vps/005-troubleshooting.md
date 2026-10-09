@@ -11,41 +11,39 @@ slug: ./troubleshooting
 ## Common Issues
 
 **DNS Records Not Resolving**
-- check that DNS records in Cloudflare are correctly configured and set to "Proxied"
-- wait for DNS propagation (typically 5-10 minutes for Cloudflare, up to 48 hours globally)
-- verify DNS resolution with `nslookup yourdomain.com` from multiple locations
-
-**Tailscale Connectivity Issues**
-- ensure both VPS and local server are authenticated with the same Tailscale account
-- verify both machines appear in `tailscale status` on each device
-- check firewall rules are not blocking Tailscale traffic (UDP port 41641)
-- test connectivity with `tailscale ping [target-ip]`
+- check that the DNS records in Cloudflare are correctly configured and set to "DNS only"
+- wait for DNS propagation (usually a few minutes with Cloudflare, but up to 48 hours globally)
+- verify DNS resolution with `nslookup yourdomain.com`, which should return the VPS's IP address and not a Cloudflare one
 
 **Pangolin Containers Not Starting**
-- check Docker logs with `sudo docker logs pangolin`, `sudo docker logs gerbil`, or `sudo docker logs traefik`
-- verify all required configuration files exist in the `config` directory
-- ensure port conflicts are not occurring (ports 80, 443, and custom ports like 11031)
+- check the Docker logs with `sudo docker logs pangolin`, `sudo docker logs gerbil`, or `sudo docker logs traefik`
+- verify that all configuration files exist in the `config` directory
+- make sure that nothing else on the VPS is using the same ports (`80`, `443`, and the chat server and match server ports)
 - check that the `docker-compose.yml` file is correctly formatted
 
 **Newt Not Connecting To Pangolin**
-- verify the site credentials (ID, secret, endpoint) are correct
-- check that Tailscale is running and connected on the local server
-- ensure the local server's Tailscale IP is reachable from the VPS
-- check Newt logs for connection errors
+- verify that the site credentials (ID, secret, endpoint) are correct
+- check that the Pangolin dashboard is reachable from the home lab, at the endpoint URL used by Newt
+- make sure that UDP ports `51820` and `21820` are open on the VPS, including in the VPS provider's firewall, if there is one
+- check the Newt logs for connection errors with `docker logs newt`
 
 **Resources Not Accessible**
-- verify resources are created in Pangolin and show "Active" status
-- check that the Tailscale IP address used in resources matches the local server's IP
-- ensure local services are running and listening on the specified ports
-- test local connectivity with `curl http://[tailscale-ip]:[port]` from the VPS
-- wait for SSL/TLS certificate generation (can take several minutes on first access)
+- verify that the resources exist in Pangolin, and that the site shows as online
+- check that each target is the home lab's local network address, and that the port matches the service
+- make sure that the services are running, and that the home lab's own firewall allows connections from the machine running Newt
+- for raw TCP and UDP resources, check that the port exists in all three places: the Gerbil ports in `docker-compose.yml`, the Traefik entry points, and the Pangolin resource
+- wait for the TLS certificates to be issued, which can take a few minutes the first time a sub-domain is accessed
+
+**Match Servers Not Joinable**
+- make sure that COMPEL has `UseProxy` set to `true`, so that the public ports are the ones which Pangolin forwards (`21234` and up)
+- check that `Gateway` in COMPEL's configuration is set to the public domain, and not to `localhost` or a local network address
+- verify that every match server has both a game port and a voice port resource in Pangolin, using UDP
 
 **Certificate Generation Failures**
-- verify DNS records are properly configured and resolving
-- check that Cloudflare proxy (orange cloud) is enabled for HTTP/HTTPS resources
-- ensure the domain's SSL/TLS mode in Cloudflare is set to "Full" or "Full (strict)"
-- review Traefik logs for certificate generation errors: `sudo docker logs traefik`
+- verify that the DNS records are configured, resolving, and set to "DNS only"
+- make sure that port `80` is reachable on the VPS, since Let's Encrypt uses it to verify the domain
+- review the Traefik logs for certificate errors with `sudo docker logs traefik`
 
 :::tip
-    For additional support and troubleshooting assistance, consult Pangolin's official documentation at [https://docs.pangolin.net](https://docs.pangolin.net) or join the community support channels.
+    For additional support, consult Pangolin's official documentation at [https://docs.pangolin.net](https://docs.pangolin.net) or join the community support channels.
 :::

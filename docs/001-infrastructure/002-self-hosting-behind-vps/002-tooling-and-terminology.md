@@ -12,166 +12,146 @@ slug: ./tooling-and-terminology
 
 ### VPS (Virtual Private Server)
 
-A Virtual Private Server is a virtualised server instance that runs on physical hardware in a data center. Unlike shared hosting, a VPS provides dedicated resources (CPU, RAM, storage) and root access, allowing full control over the operating system and installed software. VPS instances are cost-effective alternatives to dedicated servers, offering professional hosting infrastructure with public IP addresses, high-bandwidth connections, and reliable uptime guarantees. In this architecture, the VPS serves as the public-facing gateway that sits between the internet and the local infrastructure.
+A Virtual Private Server is a virtualised server running on physical hardware in a data centre. Unlike shared hosting, a VPS comes with its own dedicated resources (CPU, RAM, storage) and root access, so the operating system and everything installed on it is fully under your control. It also comes with a public IP address and a fast, reliable connection. In this setup, the VPS is the public-facing gateway which sits between the internet and the home lab.
+
+### Home Lab
+
+A home lab is one or more machines hosted at home, on the local network. In this setup, the home lab runs the Project KONGOR services and the match servers, and it has no public internet access of its own: nothing on the internet can connect to it directly, and the only way in is through the tunnel to the VPS.
 
 ### Reverse-Proxy
 
-A reverse-proxy is a server that sits in front of back-end services and forwards client requests to those services. Unlike a forward-proxy (which acts on behalf of clients), a reverse-proxy acts on behalf of servers. It intercepts incoming requests, routes them to the appropriate back-end service, and returns the server's response to the client. Reverse-proxies provide several benefits including load balancing, SSL/TLS termination, request routing based on hostnames or paths, caching, and additional security by hiding the back-end infrastructure. Common reverse-proxy software includes Traefik, Nginx, Caddy, and HAProxy.
+A reverse-proxy is a server which sits in front of back-end services and forwards client requests to them. Unlike a forward-proxy, which acts on behalf of clients, a reverse-proxy acts on behalf of servers: it receives incoming requests, routes them to the right back-end service, and returns the response to the client. Reverse-proxies are commonly used for TLS termination, routing by host name or path, load balancing, and hiding the back-end infrastructure. Common examples are Traefik, Nginx, Caddy, and HAProxy.
 
 ### SSL/TLS (Secure Sockets Layer / Transport Layer Security)
 
-SSL and its successor, TLS, are cryptographic protocols that provide secure communication over computer networks. TLS is the modern standard, though the term SSL is still commonly used. These protocols encrypt data transmitted between clients (browsers) and servers, preventing eavesdropping and tampering. SSL/TLS certificates verify the identity of websites and enable the HTTPS protocol. The certificates are issued by Certificate Authorities (CAs) or can be obtained for free through services like Let's Encrypt. SSL/TLS termination refers to the process of decrypting encrypted traffic at a proxy or load balancer before forwarding it to back-end services.
+SSL and its successor, TLS, are the protocols which encrypt traffic between clients and servers, preventing eavesdropping and tampering. TLS is the modern standard, although the term SSL is still widely used. TLS certificates prove the identity of a website and enable HTTPS, and they can be obtained for free from Let's Encrypt. TLS termination means decrypting the traffic at a proxy before forwarding it to the back-end services.
 
 ### VPN (Virtual Private Network)
 
-A Virtual Private Network creates an encrypted tunnel between two or more devices over the internet, allowing them to communicate as if they were on the same local network. VPNs provide privacy, security, and the ability to access resources across network boundaries without exposing services directly to the internet. In this architecture, VPNs (specifically Tailscale and WireGuard) enable secure communication between the VPS gateway and the local physical server without requiring port forwarding or exposing the home network's public IP address.
+A Virtual Private Network creates an encrypted tunnel between two or more devices over the internet, letting them talk to each other as if they were on the same local network. In this setup, a WireGuard tunnel between the VPS and the home lab plays this role, so that the VPS can reach the home lab services without any ports being forwarded and without the home network's public IP address being exposed.
 
 ### WireGuard
 
-WireGuard is a modern, lightweight VPN protocol designed for simplicity, speed, and security. It uses state-of-the-art cryptography and has a significantly smaller codebase compared to older VPN protocols like OpenVPN or IPSec, making it easier to audit and more performant. WireGuard operates at the kernel level, providing near-native network performance with minimal overhead. It's the underlying protocol used by both Tailscale and the Pangolin tunnelling components (Newt and Gerbil) in this architecture.
+WireGuard is a modern, lightweight VPN protocol built for simplicity, speed, and security. It uses modern cryptography and has a much smaller codebase than older protocols like OpenVPN or IPSec, which makes it easier to audit and faster. It is the protocol behind the tunnel which Newt and Gerbil set up between the home lab and the VPS.
 
 ### Tunnel
 
-In networking, a tunnel encapsulates one network protocol within another, allowing data to be transmitted securely across untrusted networks. Tunnelling creates a virtual point-to-point connection by wrapping packets in an additional layer of encryption and routing information. This architecture uses multiple tunnelling technologies: Tailscale creates encrypted tunnels for application traffic, while Pangolin/Newt/Gerbil create WireGuard tunnels specifically for resource traffic.
+In networking, a tunnel wraps one network protocol inside another, so that data can travel securely across an untrusted network. In this setup, Newt opens a WireGuard tunnel from the home lab to the VPS, and all traffic for the home lab services travels through it.
 
 ### Port Forwarding
 
-Port forwarding (also known as port mapping) is a network address translation (NAT) technique that redirects communication requests from one IP address and port number combination to another. In home networking, port forwarding is traditionally used to make local services accessible from the internet by configuring the router to forward incoming traffic on specific ports to internal devices. However, port forwarding has significant drawbacks: it exposes the home network's public IP address, requires manual router configuration, creates potential security vulnerabilities by opening inbound firewall ports, and can be difficult to maintain when IP addresses change or multiple services need exposure. This architecture deliberately avoids port forwarding by using VPN tunnels (Tailscale and WireGuard), which establish outbound connections from the local server to the VPS, eliminating the need to open any inbound ports on the home network while maintaining full connectivity.
+Port forwarding redirects traffic arriving at the router on a given port to a specific machine on the local network. It is the traditional way of making home services reachable from the internet, but it exposes the home network's public IP address, opens inbound ports on the router, and needs to be maintained by hand as services and IP addresses change. This setup avoids port forwarding entirely: the home lab opens an outbound connection to the VPS, so no inbound ports are ever opened on the home network.
+
+### Site
+
+A site is Pangolin's name for a location which hosts services, such as the home lab. Each site runs its own Newt client, which connects the site to the VPS.
+
+### Resource
+
+A resource is Pangolin's name for a single exposed service. An HTTP resource maps a public sub-domain to a local service (for example `portal.kongor.net` to the user portal), while a raw TCP or UDP resource maps a public port on the VPS to a port on the home lab (for example the chat server port).
 
 ### CDN (Content Delivery Network)
 
-A Content Delivery Network is a geographically distributed network of servers that cache and deliver content to users from locations closest to them. CDNs reduce latency, improve load times, and decrease bandwidth costs by serving cached copies of static assets (images, CSS, JavaScript, videos) from edge servers rather than the origin server. Cloudflare's CDN automatically caches eligible content and serves it from their global network of data centers.
+A Content Delivery Network is a network of servers spread across the world, which caches content and serves it to users from the location closest to them. This reduces latency, speeds up downloads, and takes load off the origin server. The Project KONGOR game client and match server files are served this way, from Cloudflare.
 
 ### DDoS (Distributed Denial Of Service)
 
-A Distributed Denial Of Service attack attempts to overwhelm a server, service, or network with excessive traffic from multiple sources, rendering it unavailable to legitimate users. DDoS attacks can consume bandwidth, exhaust server resources, or exploit application vulnerabilities. Protection typically requires filtering malicious traffic before it reaches the target infrastructure. Cloudflare provides DDoS mitigation by absorbing and filtering attack traffic at their edge network before it reaches the VPS or local infrastructure.
+A Distributed Denial Of Service attack tries to overwhelm a server or network with traffic from many sources at once, so that it becomes unavailable to legitimate users. Protecting against it usually means filtering the malicious traffic before it reaches the target. Cloudflare does this at its edge for any proxied host.
 
 ### WAF (Web Application Firewall)
 
-A Web Application Firewall monitors, filters, and blocks HTTP/HTTPS traffic to and from web applications. Unlike traditional firewalls that operate at the network layer, WAFs understand application-layer protocols and can detect and prevent attacks like SQL injection, cross-site scripting (XSS), and other OWASP Top 10 vulnerabilities. Cloudflare includes a WAF that can be configured with rules to protect against common attack patterns and malicious bot traffic.
+A Web Application Firewall monitors and filters HTTP/HTTPS traffic to web applications. Unlike traditional firewalls, which operate at the network level, a WAF understands HTTP and can block attacks like SQL injection and cross-site scripting. Cloudflare includes a WAF for proxied hosts.
 
 ### Gateway
 
-In networking, a gateway is a node that serves as an entry and exit point between different networks. It routes traffic, performs protocol translations, and can enforce security policies. In this architecture, the VPS functions as a gateway between the public internet and the private local infrastructure, controlling all inbound and outbound traffic flow.
-
-### Mesh Network
-
-A mesh network topology where each node connects to multiple other nodes, creating redundant paths for data transmission. Unlike traditional hub-and-spoke models, mesh networks provide better reliability and can route around failures. Tailscale creates a mesh VPN where devices can communicate peer-to-peer or through relay servers, automatically handling NAT traversal and firewall issues.
+A gateway is the entry and exit point between two networks. In this setup, the VPS is the gateway between the public internet and the private home lab.
 
 ## Tooling
 
 ### Cloudflare
 
-**Purpose**: Global CDN and security platform that provides the first layer of protection and performance optimisation.
+**Purpose**: DNS provider and CDN for the Project KONGOR domain.
 
 **Key Features**:
-- free SSL/TLS certificates with automatic renewal
-- DDoS protection and traffic filtering
-- Web Application Firewall (WAF)
-- CDN caching for improved performance
 - DNS management
-- IP address obfuscation (proxy mode hides the VPS IP)
+- R2 object storage, which hosts the CDN content
+- optional proxying for HTTP hosts, with DDoS protection, a WAF, and caching
+- free SSL/TLS certificates for proxied hosts
 - analytics and traffic insights
 
 **Link**: [https://www.cloudflare.com](https://www.cloudflare.com)
 
 ### Docker
 
-**Purpose**: Containerisation platform for packaging, deploying, and running applications in isolated environments.
+**Purpose**: Containerisation platform for packaging and running applications in isolated environments.
 
 **Key Features**:
-- container orchestration and management
 - consistent environments across development and production
-- image-based deployments with version control
-- resource isolation and efficient utilisation
-- Docker Compose for multi-container applications
-- portable and reproducible application deployments
+- image-based deployments which are easy to version and roll back
+- resource isolation
+- Docker Compose for running multi-container applications
 
-**Use Case**: Docker is used to containerise services running on the physical server, making deployment and management more efficient and consistent. Traefik can automatically discover and route traffic to Docker containers through labels.
+**Use Case**: On the VPS, Pangolin, Gerbil, and Traefik run as a Docker Compose stack. On the home lab, Newt runs as a container, and the Project KONGOR services use Docker for the database, the distributed cache, and the log server.
 
 **Link**: [https://www.docker.com](https://www.docker.com)
 
 ### Pangolin
 
-**Purpose**: Central control plane that manages the resource traffic tunnelling infrastructure between the physical server and VPS.
+**Purpose**: Self-hosted, tunnelled reverse-proxy with a web dashboard, which runs on the VPS and exposes the home lab services to the internet.
 
 **Key Features**:
-- identity-aware access control
-- configuration management for Newt and Gerbil
-- coordination of WireGuard tunnel establishment
-- routing policies for resource traffic
-- separation of resource traffic from application traffic
+- web dashboard for managing sites and resources
+- HTTP resources on sub-domains, with automatic Let's Encrypt certificates
+- raw TCP and UDP resources on public ports
+- identity-aware access control for HTTP resources
+- configures Traefik, Gerbil, and Newt, so they don't need to be configured by hand
 
 **Link**: [https://pangolin.net](https://pangolin.net)
 
 #### Traefik
 
-**Purpose**: Modern reverse-proxy and load balancer that runs on the VPS and physical server to route HTTP/HTTPS traffic.
+**Purpose**: Reverse-proxy which runs on the VPS and routes the incoming traffic.
 
 **Key Features**:
-- automatic service discovery (especially with Docker)
-- dynamic configuration updates without restarts
-- Let's Encrypt integration for automatic SSL certificates
-- middleware support for authentication, rate limiting, etc.
-- WebSocket support
-- multiple back-end support (Docker, Kubernetes, file-based)
+- routes HTTP/HTTPS traffic by host name, and raw TCP/UDP traffic by entry point (port)
+- picks up its routing configuration from Pangolin, without needing restarts
+- Let's Encrypt integration for automatic TLS certificates
+- middleware support, such as redirects and authentication
 
 **Link**: [https://traefik.io](https://traefik.io)
 
-#### Newt
-
-**Purpose**: WireGuard tunnel client and TCP/UDP proxy that runs on the physical server to handle resource traffic.
-
-**Key Features**:
-- WireGuard tunnel client for encrypted connections
-- TCP/UDP proxy for forwarding resource traffic
-- tunnels resource traffic (game assets, static files, media) to the VPS
-- managed by the Pangolin control plane
-- optimised for high-throughput resource delivery
-
-**Link**: [https://github.com/fosrl/newt](https://github.com/fosrl/newt)
-
 #### Gerbil
 
-**Purpose**: WireGuard interface management server that runs on the VPS to receive and serve tunnelled resource traffic.
+**Purpose**: WireGuard interface manager which runs on the VPS, and the end of the tunnel on the VPS side.
 
 **Key Features**:
-- WireGuard interface management
-- receives tunnelled traffic from Newt
-- serves resource traffic through the VPS's public endpoint
-- coordinated by Pangolin for routing configuration
-- provides the public-facing endpoint for resource delivery
+- manages the WireGuard interface which Newt connects to
+- owns the public ports of the VPS, which Traefik shares
+- configured by Pangolin
 
 **Link**: [https://github.com/fosrl/gerbil](https://github.com/fosrl/gerbil)
 
-### Tailscale
+#### Newt
 
-**Purpose**: Zero-configuration VPN service that creates secure, encrypted connections between the VPS and physical server for application traffic.
+**Purpose**: Tunnel client which runs on the home lab, and the end of the tunnel on the home lab side.
 
 **Key Features**:
-- automatic mesh VPN with NAT traversal
-- no port forwarding required
-- easy device authentication and management
-- access control lists (ACLs) for security policies
-- built on WireGuard for performance and security
-- peer-to-peer connections when possible, relay servers when needed
-- single sign-on (SSO) integration with identity providers
+- connects out to the VPS, so nothing on the home network needs to accept inbound connections
+- keeps a WebSocket connection to Pangolin for configuration, and a WireGuard connection to Gerbil for the actual traffic
+- proxies TCP and UDP traffic from the tunnel to the services on the local network
+- configured by Pangolin
 
-**Use Case**: Tailscale eliminates the need to expose the local network's public IP or open inbound firewall ports. The VPS and physical server communicate through the Tailscale network as if they were on the same LAN, providing a secure channel for reverse-proxy traffic.
+**Link**: [https://github.com/fosrl/newt](https://github.com/fosrl/newt)
 
-**Link**: [https://tailscale.com](https://tailscale.com)
+### WireGuard
 
-#### WireGuard (Protocol)
-
-**Purpose**: Underlying VPN protocol used by both Tailscale and the Pangolin components (Newt/Gerbil).
+**Purpose**: The VPN protocol behind the tunnel between Newt and Gerbil.
 
 **Key Features**:
 - modern cryptography (ChaCha20, Poly1305, Curve25519)
-- minimal codebase (~4,000 lines) for security and auditability
-- kernel-level implementation for performance
+- small codebase, which is easy to audit
 - simple configuration compared to IPSec or OpenVPN
-- fast handshake and connection establishment
-- low overhead and high throughput
-- built into the Linux kernel (5.6+)
+- fast connection setup, low overhead, and high throughput
+- built into the Linux kernel
 
 **Link**: [https://www.wireguard.com](https://www.wireguard.com)
