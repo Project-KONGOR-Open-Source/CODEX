@@ -17,33 +17,33 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Learn how to self-host Project KONGOR on your local network server, behind
-        a public VPS for enhanced security, privacy, and cost-efficiency.
+        See how Project KONGOR runs on a private home lab behind a public VPS,
+        keeping the home network hidden while staying secure and cheap.
       </>
     ),
-    link: '/docs/infrastructure/self-hosting-behind-vps/steps-and-configuration',
+    link: '/docs/infrastructure/self-hosting-behind-vps/hosting-model',
   },
   {
     title: 'Game Client Launcher Guide',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Occaecati cupiditate non provident similique sunt in culpa qui officia
-        deserunt mollitia animi id est laborum et dolorum fuga.
+        Get started with WILLOWMAKER, which keeps your game client up to date
+        and connects it to the Project KONGOR services.
       </>
     ),
-    link: '/docs/utilities/landing-page',
+    link: '/docs/utilities/willowmaker',
   },
   {
     title: 'Match Server Launcher Guide',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Ut enim ad minima veniam quis nostrum exercitationem ullam corporis suscipit
-        laboriosam nisi ut aliquid ex ea commodi.
+        Host match servers with COMPEL, which keeps the match server files up to
+        date, and runs and supervises your match servers.
       </>
     ),
-    link: '/docs/utilities/landing-page',
+    link: '/docs/utilities/compel',
   },
 ];
 
