@@ -38,5 +38,5 @@ Get the latest release for your platform from [GitHub](https://github.com/Projec
 `cdn.kongor.net` is served by Cloudflare and is the best choice in most cases, while `api.kongor.net/cdn` is served by the master server itself and works as a fallback. See [Content Delivery](/docs/services/content-delivery) for more details.
 
 :::tip
-    If the game client distribution is already up to date, or the CDN is not reachable, the game client can also be launched without synchronising first.
+    If the game client distribution is already up to date, or the CDN is not reachable, the game client can also be launched without synchronising first: press and hold **Play Heroes Of Newerth** until the button fills, then confirm. A quick click still synchronises before launching, and releasing the button before it fills launches nothing. Skipping synchronisation is meant for development, because an out-of-date distribution may not be able to connect to match servers.
 :::
