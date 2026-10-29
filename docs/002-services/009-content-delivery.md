@@ -14,7 +14,6 @@ GEMINI is the collection of Heroes Of Newerth distributions which the launchers 
     | Distribution | Platform             |
     |:------------:|:--------------------:|
     | `wac`        | Windows game client  |
-    | `mac`        | macOS game client    |
     | `lac`        | Linux game client    |
     | `was`        | Windows match server |
     | `las`        | Linux match server   |

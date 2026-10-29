@@ -8,7 +8,7 @@ slug: ./willowmaker
 
 # WILLOWMAKER
 
-WILLOWMAKER is the Heroes Of Newerth game client launcher for Project KONGOR. It keeps the game client distribution up to date, then launches the game client connected to the chosen master server. It runs on Windows, Linux, and macOS, and it ships as a single self-contained executable, so nothing else needs to be installed.
+WILLOWMAKER is the Heroes Of Newerth game client launcher for Project KONGOR. It keeps the game client distribution up to date, then launches the game client connected to the chosen master server. It runs on Windows and Linux, and it ships as a single self-contained executable, so nothing else needs to be installed.
 
 ## What It Does
 
