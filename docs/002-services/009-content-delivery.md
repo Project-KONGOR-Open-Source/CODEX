@@ -39,7 +39,7 @@ Both WILLOWMAKER and COMPEL let you choose which one to use.
 
 ## Keeping Manifests Up To Date
 
-After changing a distribution, its `manifest.json` needs to be regenerated, so that the hashes match the new contents.
+After changing a distribution, its `manifest.json` needs to be regenerated, so that the hashes match the new contents. [ARCANA](/docs/utilities/arcana) generates it, which is also how anyone hosting their own CDN makes the manifests that the launchers need.
 
 :::warning
     Text files in GEMINI must keep LF line endings. The same text file hashes differently with CRLF than with LF, and a manifest generated from CRLF files would make every launcher synchronise those entries again on every start.
