@@ -12,7 +12,8 @@ COMPEL is the Heroes Of Newerth match server launcher for Project KONGOR. It run
 
 ## What It Does
 
-- keeps the match server distribution up to date from the CDN, synchronising only what has changed
+- keeps the match server distribution up to date from the CDN, synchronising only what has changed, and gives its programs the execute permission on Linux
+- checks that the system has everything the match servers need, before it starts the match server manager for the first time
 - starts the match server manager, which runs the match servers, and restarts it if it exits unexpectedly
 - runs a UDP proxy in front of the match servers, which forwards the public game and voice ports to the match servers, and checks every client with the challenge protocol which the game expects on those ports
 - answers the server list pings, so that players can see the match servers and their latency in game
@@ -27,7 +28,9 @@ Get the latest release for your platform from [GitHub](https://github.com/Projec
     On Windows, COMPEL must be installed in a directory whose full path contains a space, for example `C:\HoN Match Server`. The match server manager starts each match server from an unquoted path, and without a space in it, the match servers start up as game clients instead. COMPEL refuses to start from such a directory. This does not apply on Linux.
 :::
 
-COMPEL does not need elevated privileges, but it does need write access to its own directory. On Linux, the match servers also write to `/opt/hon/config`, which COMPEL creates if it does not exist.
+COMPEL does not need elevated privileges, but it does need write access to its own directory. The match server manager and the match servers write their logs and replays to a user folder, `HON` on Windows and `.HON` on Linux, in the user's profile or home directory, or in the directory which `RuntimeArtefactsPath` names. COMPEL creates it if it does not exist.
+
+Before it starts the match server manager, COMPEL runs the distribution's prerequisites check, `hon_check`, once. When anything the match servers need from the operating system is missing, it logs what is missing and how to install it, and does not start the manager; it also does not start the manager when the check itself cannot run, and logs why. After installing what was missing, restart COMPEL.
 
 ## Configuration
 

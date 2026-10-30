@@ -21,6 +21,13 @@ GEMINI is the collection of Heroes Of Newerth distributions which the launchers 
 
 Every distribution comes with a `manifest.json`, which describes its contents, with a size and a SHA-256 hash for every entry. [WILLOWMAKER](/docs/utilities/willowmaker) and [COMPEL](/docs/utilities/compel) compare the local installation against the manifest, and only synchronise what has changed.
 
+The manifest also records, for every file, whether it is a program, so that the launchers can give each program the execute permission that Linux needs to run it. It carries two versions, both written as `5.YY.MM.DD`:
+
+- `versionExecutable`, the game's version, which the distribution's programs were built with
+- `versionResources`, the date on which the manifest was generated, since the resources can change without the programs
+
+The manifest lives on the CDN only: it never lists itself, and the launchers read it from the CDN without keeping a copy in an installation.
+
 ## Where It Is Served From
 
 The same content is available from two places, both with the same layout:

@@ -13,8 +13,8 @@ WILLOWMAKER is the Heroes Of Newerth game client launcher for Project KONGOR. It
 ## What It Does
 
 - lets you pick a master server and a CDN, and shows whether both are reachable
-- keeps the game client distribution up to date from the CDN, synchronising only what has changed and removing anything which is no longer part of the distribution
-- launches the game client, or the map editor
+- keeps the game client distribution up to date from the CDN, synchronising only what has changed and removing anything which is no longer part of the distribution, and gives its programs the execute permission on Linux
+- checks that the system has everything the game needs, then launches the game client, or the map editor
 - checks for new releases on start-up, and updates itself
 
 ## Installing
@@ -24,6 +24,10 @@ Get the latest release for your platform from [GitHub](https://github.com/Projec
 :::warning
     Since WILLOWMAKER removes files which are not part of the game client distribution, it refuses to run from a directory which contains unrelated files, such as a downloads or documents directory. This protects personal files from being deleted by mistake.
 :::
+
+## Prerequisites
+
+Before it launches the game client or the map editor, WILLOWMAKER runs the distribution's prerequisites check, `hon_check`. When anything the game needs from the operating system is missing, such as a runtime or a library, WILLOWMAKER shows a **Missing Prerequisites** dialog, which says what is missing, why the game needs it, and how to install it, and launches nothing. The text in the dialog can be selected, so that an install command can be copied. WILLOWMAKER also launches nothing when the check itself cannot run, and the dialog then says why.
 
 ## Master Server And CDN
 
