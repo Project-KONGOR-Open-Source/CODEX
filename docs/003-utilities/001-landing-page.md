@@ -8,9 +8,10 @@ slug: ./landing-page
 
 # Utilities
 
-This section covers the two launchers which connect to the Project KONGOR services:
+This section covers the two launchers which connect to the Project KONGOR services, and the tools which generate the distributions' manifests:
 
 - [WILLOWMAKER](/docs/utilities/willowmaker): the game client launcher, which players use to keep the game client up to date and to connect to a master server
 - [COMPEL](/docs/utilities/compel): the match server launcher, which hosts use to run and supervise match servers
+- [ARCANA](/docs/utilities/arcana): the distribution tools, which generate the manifest that every CDN needs, including one hosted by a self-hoster
 
 Both launchers are standalone, cross-platform applications, which keep their distributions up to date from the [Content Delivery](/docs/services/content-delivery) network and update themselves when a new version is released.
